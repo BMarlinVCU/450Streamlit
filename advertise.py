@@ -7,27 +7,56 @@ Original file is located at
     https://colab.research.google.com/drive/1eczLAAgn1mPjQJHTgM5ud8pWoAULRkl0
 """
 
-!pip install streamlit
+try:
+    import streamlit as st
+except ModuleNotFoundError:
+    import os
+    os.system("pip install streamlit")
+    import streamlit as st
 
 import pandas as pd
 
 url = "https://raw.githubusercontent.com/selva86/datasets/master/Advertising.csv"
+import pandas as pd
+
+# Load the dataset
+url = "https://raw.githubusercontent.com/selva86/datasets/master/Advertising.csv"
 df = pd.read_csv(url)
-df.to_csv("Advertising.csv", index=False)
+
+# Example cities — you can replace or expand as needed
+cities = [
+    ("New York", 40.7128, -74.0060),
+    ("Los Angeles", 34.0522, -118.2437),
+    ("Chicago", 41.8781, -87.6298),
+    ("Houston", 29.7604, -95.3698),
+    ("Phoenix", 33.4484, -112.0740),
+    ("Philadelphia", 39.9526, -75.1652),
+    ("San Antonio", 29.4241, -98.4936),
+    ("San Diego", 32.7157, -117.1611),
+    ("Dallas", 32.7767, -96.7970),
+    ("San Jose", 37.3382, -121.8863)
+]
+
+# Repeat cities to match dataset length
+df["City"], df["latitude"], df["longitude"] = zip(*[cities[i % len(cities)] for i in range(len(df))])
+
+# Save or display
 df.head()
+
+df
 
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 
 # Load data
-df = pd.read_csv("Advertising.csv")
+# df = pd.read_csv("Advertising.csv") # Remove this line
 
 st.title("📊 Advertising Effectiveness Dashboard")
 
 st.sidebar.header("Filters")
-x_var = st.sidebar.selectbox("X-Axis", df.columns[:-1])
-y_var = st.sidebar.selectbox("Y-Axis", [df.columns[-1]])
+x_var = st.sidebar.selectbox("X-Axis", df.columns[:-3]) # Adjust column selection to exclude City, latitude, longitude
+y_var = st.sidebar.selectbox("Y-Axis", [df.columns[4]]) # Select 'sales' as the default Y-axis
 
 fig = px.scatter(df, x=x_var, y=y_var, trendline="ols",
                  title=f"{y_var} vs {x_var}")
@@ -35,3 +64,9 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.write("### Data Preview")
 st.dataframe(df.head())
+
+import streamlit as st
+
+st.title("Advertising Data Map")
+
+st.map(df, latitude="latitude", longitude="longitude") # Use the correct column names

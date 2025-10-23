@@ -34,4 +34,5 @@ st.dataframe(df)
 st.title("Its a map!!!")
 
 fig=px.scatter_mapbox(df,lat='latitude',lon='longitude',color='sales',size='TV',hover_name='City')
+fig.update_layout(mapbox_style="open-street-map")
 st.plotly_chart(fig)
